@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(-45deg, #ff6ec4, #7873f5, #4adede, #ffd166);
+            background-size: 400% 400%;
+            animation: gradientShift 12s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating blobs in the background */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.55;
+            z-index: 0;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .blob1 {
+            width: 220px;
+            height: 220px;
+            background: #ff9a9e;
+            top: 10%;
+            left: 8%;
+            animation-duration: 9s;
+        }
+
+        .blob2 {
+            width: 300px;
+            height: 300px;
+            background: #a1c4fd;
+            bottom: 5%;
+            right: 10%;
+            animation-duration: 13s;
+        }
+
+        .blob3 {
+            width: 160px;
+            height: 160px;
+            background: #fbc2eb;
+            bottom: 15%;
+            left: 20%;
+            animation-duration: 11s;
+        }
+
+        .blob4 {
+            width: 180px;
+            height: 180px;
+            background: #fddb92;
+            top: 8%;
+            right: 15%;
+            animation-duration: 8s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+            33% { transform: translateY(-30px) translateX(20px) scale(1.05); }
+            66% { transform: translateY(20px) translateX(-15px) scale(0.95); }
+        }
+
+        form {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(6px);
+            padding: 35px 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 400px;
+            animation: popIn 0.6s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 22px;
+            background: linear-gradient(90deg, #ff6ec4, #7873f5, #4adede);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: hueShift 6s linear infinite;
+        }
+
+        @keyframes hueShift {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        input[type="text"]:focus { border-color: #ff6ec4; box-shadow: 0 0 0 3px rgba(255, 110, 196, 0.2); }
+        input[type="number"]:focus { border-color: #7873f5; box-shadow: 0 0 0 3px rgba(120, 115, 245, 0.2); }
+        input[type="tel"]:focus { border-color: #4adede; box-shadow: 0 0 0 3px rgba(74, 222, 222, 0.2); }
+        textarea:focus { border-color: #ffd166; box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.2); }
+
+        input:focus, textarea:focus {
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(90deg, #ff6ec4, #7873f5, #4adede);
+            background-size: 200% auto;
+            transition: background-position 0.4s ease, transform 0.15s ease;
+        }
+
+        button:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+    <div class="blob blob4"></div>
+
+    <form method="POST">
+
+        <h1>User Details Form</h1>
+
+        {% csrf_token %}
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="5" cols="30" required></textarea>
+
+        <button type="submit">Submit</button>
+
+    </form>
+
+</body>
+</html>
