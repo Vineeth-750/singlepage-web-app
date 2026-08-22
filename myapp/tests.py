@@ -26,7 +26,7 @@ class UserDetailsViewTest(TestCase):
         response = self.client.get(reverse("user_form"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "template.html")
+        self.assertTemplateUsed(response, "index.html")
 
     def test_post_user_form(self):
         data = {
