@@ -85,51 +85,52 @@ jobs:
 #-------------------------------------------------------------------------------------#
                           #CD
 #-------------------------------------------------------------------------------------#
-  # cd:
-  #   needs: ci
+  cd:
+    needs: ci
 
-  #   runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  #   environment: production
+    environment: production
 
-  #   steps:
+    steps:
 
-  #     - name: Deploy to EC2
-  #       uses: appleboy/ssh-action@v1
-  #       with:
-  #         host: ${{ secrets.EC2_HOST }}
-  #         username: ${{ secrets.EC2_USER }}
-  #         key: ${{ secrets.EC2_SSH_KEY }}
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
 
-  #         script: |
+          script: |
 
-  #           # Login to Docker Hub
-  #           echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
-  #           docker login \
-  #             --username "${{ secrets.DOCKERHUB_USERNAME }}" \
-  #             --password-stdin
+            # Login to Docker Hub
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
+            docker login \
+              --username "${{ secrets.DOCKERHUB_USERNAME }}" \
+              --password-stdin
 
-  #           # Pull the image created by CI
-  #           docker pull \
-  #             ${{ secrets.DOCKERHUB_USERNAME }}/django-app:${{ github.sha }}
+            # Pull image created by CI
+            docker pull \
+              ${{ secrets.DOCKERHUB_USERNAME }}/django-app:${{ github.sha }}
 
-  #           # Stop old container
-  #           docker stop django-app || true
+            # Stop old container
+            docker stop django-app || true
 
-  #           # Remove old container
-  #           docker rm django-app || true
+            # Remove old container
+            docker rm django-app || true
 
-  #           # Start new container and connect it to RDS
-  #           docker run -d \
-  #             --name django-app \
-  #             -p 8000:8000 \
-  #             -e DB_NAME="${{ secrets.DB_NAME }}" \
-  #             -e DB_USER="${{ secrets.DB_USER }}" \
-  #             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-  #             -e DB_HOST="${{ secrets.DB_HOST }}" \
-  #             -e DB_PORT="${{ secrets.DB_PORT }}" \
-  #             ${{ secrets.DOCKERHUB_USERNAME }}/django-app:${{ github.sha }}
+            # Start new container
+            docker run -d \
+              --name django-app \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              -e DB_NAME="${{ secrets.DB_NAME }}" \
+              -e DB_USER="${{ secrets.DB_USER }}" \
+              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+              -e DB_HOST="${{ secrets.DB_HOST }}" \
+              -e DB_PORT="${{ secrets.DB_PORT }}" \
+              ${{ secrets.DOCKERHUB_USERNAME }}/django-app:${{ github.sha }}
 
-  #           # Run Django migrations on RDS
-  #           docker exec django-app \
-  #             python manage.py migrate
+            # Run Django migrations on RDS
+            docker exec django-app \
+              python manage.py migrate
